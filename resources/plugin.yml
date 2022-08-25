@@ -1,0 +1,13 @@
+main: gay.gaycraft.plugin.Gaycraft
+api-version: 1.19
+name: Gaycraft
+description: Gaycraft handler plugin
+version: 0.1.0
+author: Lolas_Pocket_PC
+commands:
+  color:
+    description: "Set the color of your name"
+  pronouns:
+    description: "Set your pronouns"
+  nick:
+    description: "Set player nickname"
