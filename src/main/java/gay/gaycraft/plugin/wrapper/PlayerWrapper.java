@@ -21,12 +21,15 @@ public class PlayerWrapper {
 
     private transient OfflinePlayer player;
     private transient File file;
+    private transient JavaPlugin plugin;
 
     private String displayname, color = "#FF69B4", pronouns, join;
     
     public PlayerWrapper(JavaPlugin plugin, OfflinePlayer player) {
         file = new File(plugin.getDataFolder(), "player/" + player.getUniqueId() + ".json");
+
         this.player = player;
+        this.plugin = plugin;
 
         if (file.exists()) {
             try {
@@ -163,7 +166,7 @@ public class PlayerWrapper {
                 .append(pronouns)
                 .append("\nWorld: ")
                 .color(ChatColor.AQUA)
-                .append(player.getPlayer().getLocation().getWorld().getName())
+                .append(new WorldWrapper(plugin, player.getPlayer().getLocation().getWorld()).getDisplayName())
                 .color(ChatColor.WHITE)
                 .append("\nJoined: ")
                 .color(ChatColor.AQUA)
