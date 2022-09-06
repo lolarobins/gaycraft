@@ -39,7 +39,7 @@ public class Nick implements CommandExecutor {
         String nick = args[0];
         for (int i = 1; i < args.length; i++)
             nick += " " + args[i];
-        
+
         if (nick.length() > 32) {
             sender.sendMessage(Message.ERROR + "Nickname must be less than 32 characters");
             return true;
@@ -48,7 +48,9 @@ public class Nick implements CommandExecutor {
         playerWrapper.setDisplayName(nick);
         sender.sendMessage(ChatColor.GREEN + "Your nickname has been set to '" + nick + "'.");
 
+        ((Player) sender).setPlayerListName(ChatColor.of(args[0]) + playerWrapper.getDisplayName());
+
         return true;
     }
-    
+
 }

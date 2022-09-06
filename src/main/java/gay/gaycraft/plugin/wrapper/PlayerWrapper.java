@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.Gson;
 
+import gay.gaycraft.plugin.permission.Group;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -23,8 +24,10 @@ public class PlayerWrapper {
     private transient File file;
     private transient JavaPlugin plugin;
 
-    private String displayname, color = "#FF69B4", pronouns, join;
-    
+    private boolean muted = false, banned = false;
+    private String displayname, color, pronouns, join, group, muteReason, banReason;
+    private long banExpire, muteExpire;
+
     public PlayerWrapper(JavaPlugin plugin, OfflinePlayer player) {
         file = new File(plugin.getDataFolder(), "player/" + player.getUniqueId() + ".json");
 
@@ -42,6 +45,7 @@ public class PlayerWrapper {
                 color = wrapper.color;
                 pronouns = wrapper.pronouns;
                 join = wrapper.join;
+                group = wrapper.group;
 
                 inputStream.close();
             } catch (IOException e) {
@@ -140,7 +144,7 @@ public class PlayerWrapper {
             e.printStackTrace();
         }
     }
-    
+
     public BaseComponent[] getHoverText() {
         BaseComponent[] username = isDisplayNameSet()
                 ? new ComponentBuilder("\nUsername: ")
@@ -161,18 +165,49 @@ public class PlayerWrapper {
                         .create();
 
         return new ComponentBuilder(getDisplayName())
-                .color(ChatColor.of(color))
+                .color(ChatColor.of(getColor()))
                 .append(username)
                 .append(pronouns)
                 .append("\nWorld: ")
                 .color(ChatColor.AQUA)
                 .append(new WorldWrapper(plugin, player.getPlayer().getLocation().getWorld()).getDisplayName())
                 .color(ChatColor.WHITE)
+                .append("\nRank: ")
+                .color(ChatColor.AQUA)
+                .append(getGroup().getDisplayName())
+                .color(ChatColor.WHITE)
                 .append("\nJoined: ")
                 .color(ChatColor.AQUA)
                 .append(getJoinDate())
                 .color(ChatColor.WHITE)
                 .create();
+    }
+
+    public static PlayerWrapper getTarget(JavaPlugin plugin, OfflinePlayer player) {
+        File file = new File(plugin.getDataFolder(), "player/" + player.getUniqueId() + ".json");
+
+        if (file.exists()) {
+            PlayerWrapper wrapper = null;
+
+            try {
+                FileInputStream inputStream = new FileInputStream(file);
+                Gson gson = new Gson();
+
+                wrapper = gson.fromJson(new String(inputStream.readAllBytes()), PlayerWrapper.class);
+
+                wrapper.plugin = plugin;
+                wrapper.player = player;
+                wrapper.file = file;
+
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return wrapper;
+        }
+
+        return null;
     }
 
     public String getPronouns() {
@@ -187,6 +222,7 @@ public class PlayerWrapper {
     public String getDisplayName() {
         if (displayname == null)
             return player.getName();
+
         return displayname;
     }
 
@@ -200,6 +236,9 @@ public class PlayerWrapper {
     }
 
     public String getColor() {
+        if (color == null)
+            return "#FF69B4";
+
         return color;
     }
 
@@ -210,6 +249,100 @@ public class PlayerWrapper {
 
     public String getJoinDate() {
         return join;
+    }
+
+    public Group getGroup() {
+        if (group == null)
+            return Group.MEMBER;
+
+        return Group.valueOf(group);
+    }
+
+    public void setGroup(Group group) {
+        if (player.isOnline())
+            player.getPlayer()
+                    .sendMessage(ChatColor.LIGHT_PURPLE + "Your rank has been set to " + group.getDisplayName() + ".");
+
+        this.group = group.name();
+        save();
+    }
+
+    public void mute(long duration, String reason) {
+        if (player.isOnline())
+            player.getPlayer().sendMessage(ChatColor.RED + "You have been muted for '" + reason + "'.");
+
+        if (duration == 0)
+            muteExpire = 0;
+        else if (muteExpire < System.currentTimeMillis())
+            muteExpire = System.currentTimeMillis() + duration;
+        else
+            muteExpire += duration;
+
+        muted = true;
+        muteReason = reason;
+
+        save();
+    }
+
+    public void unmute() {
+        muted = false;
+        save();
+    }
+
+    public boolean isMuted() {
+        if (!muted)
+            return false;
+
+        if (muteExpire != 0 && muteExpire < System.currentTimeMillis()) {
+            muted = false;
+            save();
+            return false;
+        }
+
+        return true;
+    }
+
+    public String getMuteReason() {
+        return muteReason;
+    }
+
+    public void ban(long duration, String reason) {
+        if (player.isOnline())
+            player.getPlayer().kickPlayer(reason);
+
+        if (duration == 0)
+            banExpire = duration;
+        else if (banExpire < System.currentTimeMillis())
+            banExpire = System.currentTimeMillis() + duration;
+        else
+            banExpire += duration;
+
+        banned = true;
+        banReason = reason;
+
+        save();
+    }
+
+    public void unban() {
+        banned = false;
+        save();
+    }
+
+    public boolean isBanned() {
+        if (!banned)
+            return false;
+
+        if (banExpire != 0 && banExpire < System.currentTimeMillis()) {
+            banned = false;
+            save();
+            return false;
+        }
+
+        return true;
+    }
+
+    public String getBanReason() {
+        return banReason;
     }
 
 }

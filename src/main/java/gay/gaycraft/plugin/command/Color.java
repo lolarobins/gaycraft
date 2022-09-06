@@ -44,5 +44,5 @@ public class Color implements CommandExecutor {
 
         return true;
     }
-    
+
 }

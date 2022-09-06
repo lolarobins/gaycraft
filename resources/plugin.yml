@@ -11,3 +11,19 @@ commands:
     description: "Set your pronouns"
   nick:
     description: "Set player nickname"
+  rank:
+    description: "Set player rank"
+  unmute:
+    description: "Unmute a player"
+  unban:
+    description: "Unban a player"
+  ban:
+    description: "Ban a player"
+  kick:
+    description: "Kick a player"
+  tempban:
+    description: "Temporarily ban a player"
+  mute:
+    description: "Mute a player"
+  tempmute:
+    description: "Temporarily mute a player"

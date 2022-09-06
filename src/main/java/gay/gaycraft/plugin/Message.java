@@ -4,7 +4,8 @@ import net.md_5.bungee.api.ChatColor;
 
 public final class Message {
 
-    private Message() {}
+    private Message() {
+    }
 
     // for repeated messages, errors
 

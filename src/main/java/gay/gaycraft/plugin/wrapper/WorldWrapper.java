@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.gson.Gson;
 
 public class WorldWrapper {
-    
+
     private transient World world;
     private transient File file;
 
@@ -20,7 +20,7 @@ public class WorldWrapper {
 
     public WorldWrapper(JavaPlugin plugin, World world) {
         file = new File(plugin.getDataFolder(), "world/" + world.getName() + ".json");
-        
+
         this.world = world;
 
         if (file.exists()) {

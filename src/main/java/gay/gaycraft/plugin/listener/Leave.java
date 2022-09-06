@@ -15,7 +15,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class Leave implements Listener {
-    
+
     private final JavaPlugin plugin;
 
     public Leave(JavaPlugin plugin) {
@@ -34,7 +34,7 @@ public class Leave implements Listener {
                 .color(ChatColor.of(playerWrapper.getColor()))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                         new Text(playerWrapper.getHoverText())))
-                .append(" joined the server")
+                .append(" left the server")
                 .event((HoverEvent) null)
                 .create();
 

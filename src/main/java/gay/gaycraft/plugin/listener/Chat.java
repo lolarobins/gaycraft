@@ -27,6 +27,8 @@ public class Chat implements Listener {
         // cancel event to use chat components
         event.getRecipients().clear();
 
+        Bukkit.getConsoleSender().sendMessage(event.getPlayer().getName() + ": " + event.getMessage());
+
         PlayerWrapper playerWrapper = new PlayerWrapper(plugin, event.getPlayer());
 
         BaseComponent[] component = new ComponentBuilder(playerWrapper.getDisplayName())

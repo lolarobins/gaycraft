@@ -13,8 +13,8 @@ import gay.gaycraft.plugin.Message;
 import gay.gaycraft.plugin.wrapper.PlayerWrapper;
 import net.md_5.bungee.api.ChatColor;
 
-public class Pronouns implements CommandExecutor{
-    
+public class Pronouns implements CommandExecutor {
+
     private final JavaPlugin plugin;
 
     public Pronouns(JavaPlugin plugin) {
@@ -30,7 +30,7 @@ public class Pronouns implements CommandExecutor{
             sender.sendMessage(Message.INVALID_ARGUMENTS);
             return true;
         }
-        
+
         new PlayerWrapper(plugin, (Player) sender).setPronouns(args[0].toLowerCase());
         sender.sendMessage(ChatColor.GREEN + "Your pronouns have been set to '" + args[0].toLowerCase() + "'.");
 
@@ -43,8 +43,7 @@ public class Pronouns implements CommandExecutor{
         public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
             return List.of("she/her", "he/him", "they/them", "it/its");
         }
-        
+
     }
-    
 
 }
